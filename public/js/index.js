@@ -35,7 +35,10 @@ if (signup_button) {
   };
 }
 
-if (document.querySelector(".city-sub-container").innerHTML.trim() !== "") {
+if (
+  document.querySelector(".city-sub-container") &&
+  document.querySelector(".city-sub-container").innerHTML.trim() !== ""
+) {
   cityContainer.classList.add("city-no-background");
   cityContainer.classList.remove("city-background");
 } else {

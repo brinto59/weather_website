@@ -79,7 +79,7 @@
                   <div class="responsive-cities">
                     <% allLocationData.forEach((location)=>{ %>
                       <%if(allLocationData[0]._id==location.id){%>
-                    <div class="responsive-city city-clicked" onclick="getWeatherData('<%=location._id%>')" id="<%=location._id%>"><%}else{%>
+                    <div class="responsive-city city-clicked" onclick="getWeatherData('<%=location._id%>')" data-id="<%=location._id%>"><%}else{%>
                       <div class="responsive-city" onclick="getWeatherData('<%=location._id%>')" id="<%=location._id%>"><%}%>
                       <%=location.name %>                
                     </div>
@@ -98,8 +98,8 @@
                 <div class="city-sub-container">
                   <% allLocationData.forEach((location)=>{ %>
                     <%if(allLocationData[0]._id==location.id){%>
-                  <div class="city city-clicked" onclick="getWeatherData('<%=location._id%>')" id="<%=location._id%>"><%}else{%>
-                    <div class="city" onclick="getWeatherData('<%=location._id%>')" id="<%=location._id%>"><%}%>
+                  <div class="city city-clicked" onclick="getWeatherData('<%=location._id%>')" data-id="<%=location._id%>"><%}else{%>
+                    <div class="city" onclick="getWeatherData('<%=location._id%>')" data-id="<%=location._id%>"><%}%>
                     <div class="city-name"><%=location.name %></div>
                     <div class="city-weather">
                       <div class="temp"><%=location.real_time_info.temp_c %>&#8451;</div>
@@ -297,15 +297,14 @@
       }
 
       async function getWeatherData(locationId){
-       
-        
-
-        if(document.querySelector(".city-clicked")){
-          document.querySelector(".city-clicked").classList.remove("city-clicked");
-        }
-        const cityContainer = document.getElementById(`${locationId}`);
-        cityContainer.classList.add("city-clicked");
-        const cityWeatherDiv = cityContainer.querySelector(".city-weather");
+        document.querySelectorAll(".city-clicked").forEach((con)=>{
+          con.classList.remove("city-clicked");
+        })
+        const cityContainer = document.querySelectorAll(`[data-id="${locationId}"]`);
+        cityContainer.forEach((con)=>{
+          con.classList.add("city-clicked");
+        })
+        const cityWeatherDiv = document.querySelector(`.city[data-id="${locationId}"] .city-weather`);
 
          let response = await fetch(`/index/weather/${locationId}`);
          let result = await response.json();
@@ -365,8 +364,8 @@
       };
 
       async function refreshData(locationId){
-        const cityTemp = document.getElementById(`${locationId}`).querySelector(".temp");
-        const cityCondition = document.getElementById(`${locationId}`).querySelector(".weather-condition");
+        const cityTemp = document.querySelector(`[data-id="${locationId}"] .temp`);
+        const cityCondition = document.querySelector(`[data-id="${locationId}"] .weather-condition`);
         const refreshButton = document.querySelector("#refresh-data");
         refreshButton.classList.add("rotate");
         try{
@@ -438,14 +437,12 @@
       function getBackground(weatherData){
         
       if(weatherData.real_time_info.condition.toLowerCase().indexOf("rain")>=0){
-        if(weatherData.real_time_info.condition.indexOf("thunder")>=0){
+        if(weatherData.real_time_info.condition.toLowerCase().indexOf("thunder")>=0){
           backgroundDiv.className ="background rain lightning";
           backgroundDiv.innerHTML = "";
         }else{
           backgroundDiv.className = "background rain";
           backgroundDiv.innerHTML = "";
-          
-
           }
       }else if(weatherData.real_time_info.condition.toLowerCase().indexOf("cloudy")>=0){
           if(weatherData.real_time_info.is_day == 1){
@@ -496,21 +493,19 @@
                 backgroundDiv.innerHTML = `<div class="sun"></div>`;
                 }else{
                   backgroundDiv.className = "background clear-night";
-                  backgroundDiv.innerHTML = `<div class="background clear-night">
+                  backgroundDiv.innerHTML = `
                     <div class="moon"></div>
                     <div id="stars1"></div>         
                     <div id="stars2"></div>         
-                    <div id="stars3"></div>  
-                  </div>`;          
+                    <div id="stars3"></div> `;          
                 }
               }else if(weatherData.real_time_info.condition.toLowerCase().indexOf("clear")>=0){
                 backgroundDiv.className = "background clear-night";
-                  backgroundDiv.innerHTML = `<div class="background clear-night">
+                  backgroundDiv.innerHTML = `
                     <div class="moon"></div>
                     <div id="stars1"></div>         
                     <div id="stars2"></div>         
-                    <div id="stars3"></div>  
-                  </div>`; 
+                    <div id="stars3"></div> `; 
               }else if(weatherData.real_time_info.condition.toLowerCase().indexOf("snow")>=0){
                    if(weatherData.real_time_info.condition.toLowerCase().indexOf("thunder")>=0){
                     backgroundDiv.className = "background snow lightning";
@@ -528,9 +523,8 @@
                 backgroundDiv.innerHTML = "";
               }
               const rain_container = document.querySelector("div.rain");
-              console.log(rain_container);
               if (rain_container) {
-                    const dropNum = 800;
+                    const dropNum = 500;
                     createRain(dropNum, rain_container);
               }
          }
@@ -544,17 +538,17 @@
           responsiveCityContainer.classList.add("hidden");
           responsiveCityContainer.classList.remove("visible");
           responsiveCityContainer.style.opacity = 0;
-          responsiveCities.innerHTML = "";
+          // responsiveCities.innerHTML = "";
         }else if(responsiveCityContainer.classList.contains("hidden")){
           responsiveCityContainer.classList.add("visible");
           responsiveCityContainer.classList.remove("hidden");
-          responsiveCities.innerHTML = `<% allLocationData.forEach((location)=>{ %>
-                      <%if(allLocationData[0]._id==location.id){%>
-                    <div class="responsive-city city-clicked" onclick="getWeatherData('<%=location._id%>')" id="<%=location._id%>"><%}else{%>
-                      <div class="responsive-city" onclick="getWeatherData('<%=location._id%>')" id="<%=location._id%>"><%}%>
-                      <%=location.name %>                
-                    </div>
-                    <% }); %>`;
+          // responsiveCities.innerHTML = `<% allLocationData.forEach((location)=>{ %>
+          //             <%if(allLocationData[0]._id==location.id){%>
+          //           <div class="responsive-city city-clicked" onclick="getWeatherData('<%=location._id%>')" id="<%=location._id%>"><%}else{%>
+          //             <div class="responsive-city" onclick="getWeatherData('<%=location._id%>')" id="<%=location._id%>"><%}%>
+          //             <%=location.name %>                
+          //           </div>
+          //           <% }); %>`;
           responsiveCityContainer.style.opacity = 1;
         }
 

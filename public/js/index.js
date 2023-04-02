@@ -14,13 +14,13 @@ function createRain(dropNum, rain_container) {
     drop_div.classList.add("drop");
     drop_div.setAttribute("id", `drop${i}`);
     rain_container.append(drop_div);
-    drop_div.style.left = `${dropRange(1, 1500)}px`;
-    drop_div.style.top = `${dropRange(-2000, 1400)}px`;
+    drop_div.style.left = `${dropRange(1, 100)}%`;
+    drop_div.style.top = `${dropRange(-100, 100)}%`;
   }
 }
 
 if (rain_container) {
-  const dropNum = 800;
+  const dropNum = 500;
   createRain(dropNum, rain_container);
 }
 

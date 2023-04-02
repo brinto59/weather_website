@@ -1,0 +1,38 @@
+<%-include('./partials/header.ejs')%>
+  <body>
+    <main id="container">
+      <div class="background"></div>
+      <div class="main-container">
+        <div class="login-container">
+          <header id="login-header">
+            <h1>Login!</h1>
+          </header>
+            <form method="post" action="/" id="login-form">
+              <% if(errors.email){%>
+                <input type="text" placeholder="Enter your email" name="email" class="input-error" value="<%=data%>">
+                <p class="error email-error show"><%=errors.email.msg%></p>
+                <%}else if(errors.password || errors.common){%>
+                  <input type="text" placeholder="Enter your email" name="email"  value="<%=data%>">
+                  <%}else{%>
+                    <input type="text" placeholder="Enter your email" name="email">
+                    <%}%>
+                <% if(errors.password){%>
+                <input type="password" placeholder="Enter password" name="password" class="input-error">
+                <p class="error password-error show"><%=errors.password.msg%></p>
+                <%}else{%>
+                  <input type="password" placeholder="Enter password" name="password">
+                <%}%>
+                <% if(errors.common){%>
+                <p class="error common-error show"><%=errors.common.msg%></p>
+                <%}%>
+                <input type="submit" value="Login" id="loginButton">
+            </form>
+            <div id="no-account">
+              <div>Don't have an account?</div>
+              <div id="signup-button"><a href="/signup">Sign up</a></div>
+            </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

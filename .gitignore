@@ -1,0 +1,4 @@
+node_modules
+public/sass
+gulpfile.js
+.env

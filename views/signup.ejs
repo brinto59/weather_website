@@ -1,0 +1,83 @@
+<%- include('./partials/header.ejs')%>
+  <body>
+    <main id="container">
+      <div class="background"></div>
+      <div class="main-container">
+        <div class="signup-container">
+          <header id="signup-header">
+            <h1>Sign Up</h1>
+          </header>
+            <form method="post" action="/signup" enctype="multipart/form-data" id="signup-form">
+                <input type="text" placeholder="Enter your name" name="name">
+                <p class="error name-error"></p>
+                <input type="text" placeholder="Enter your Email" name="email">
+                <p class="error email-error"></p>
+                <input type="password" placeholder="Enter password" name="password">
+                <p class="error password-error"></p>
+                <input type="password" placeholder="Re-enter the password" name="rePassword">
+                <p class="error rePassword-error"></p>
+                <input type="file" name="avatar" placeholder="Upload your avatar">
+                <p class="error avatar-error"></p>
+
+                <p class="error common-error"></p>
+
+                <input type="submit" value="Sign up" id="signUpButton">
+            </form>
+            <div id="have-account">
+              <div>Already have an account?</div>
+              <div id="login-button"><a href="/">Login</a></div>
+            </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      const form = document.getElementById("signup-form");
+      const submitter = document.querySelector("input[type=submit]");
+      console.log(form);
+      console.log("hello");
+
+      const successToast = Toastify({
+        text:"You signed up successfully",
+        duration:1000
+      });
+
+      form.onsubmit = async function(event){
+        event.preventDefault();
+
+        const formData = new FormData(form, submitter);
+
+        const inputElement = document.querySelectorAll("form input");
+        for(let i=0; i< inputElement.length; i++){
+          inputElement[i].classList.remove("input-error");
+        }
+
+        const pElement = document.querySelectorAll("form p.error");
+        for(let i=0; i< inputElement.length; i++){
+          pElement[i].style.display="none";
+          pElement[i].innerHTML = "";
+        }
+
+        const response = await fetch("/signup", {
+          method:"POST",
+          body:formData
+        });
+        const result = await response.json();
+
+        if(result.errors){
+          // console.log(result.errors);
+          Object.keys(result.errors).forEach((fieldname)=>{
+            form[fieldname].classList.add('input-error');
+            document.querySelector(`.${fieldname}-error`).style.display="block";
+            document.querySelector(`.${fieldname}-error`).innerHTML = result.errors[fieldname].msg;
+          })
+        }else{
+          successToast.showToast();
+          console.log("success");
+          setTimeout(()=>{
+            window.location.href = "/";
+          }, 1000);
+        }
+      }
+    </script>
+  </body>
+</html>

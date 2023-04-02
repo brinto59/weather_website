@@ -1,0 +1,564 @@
+<%- include('./partials/header.ejs')%>
+  <body>
+    <main id="container">
+      <% if(Object.keys(weatherData).length!==0){%>
+      <% if(weatherData.real_time_info.condition.toLowerCase().indexOf("rain")>=0){%>
+        <%if(weatherData.real_time_info.condition.toLowerCase().indexOf("thunder")>=0){%>
+      <div class="background rain lightning">
+        </div>
+        <%}else{%>
+          <div class="background rain">
+          </div>
+          <%}%>
+        <%}else if(weatherData.real_time_info.condition.toLowerCase().indexOf("cloudy")>=0){%>
+          <%if(weatherData.real_time_info.is_day == 1){%>
+          <div class="background cloudy">
+            <%- include('./partials/cloudy_background.ejs')%>
+          </div>
+          <%}else{%>
+            <div class="background cloudy clear-night">
+              <%- include('./partials/cloudy_background.ejs')%>
+              <div class="moon"></div>
+            <div id="stars1"></div>         
+            <div id="stars2"></div>         
+            <div id="stars3"></div>  
+            </div>
+            <%}%>
+            <%}else if(weatherData.real_time_info.condition.toLowerCase().indexOf("clear")>=0){%>
+              <div class="background clear-night">
+                <div class="moon"></div>
+              <div id="stars1"></div>         
+              <div id="stars2"></div>         
+              <div id="stars3"></div>  
+              </div>
+            <%}else if(weatherData.real_time_info.condition.toLowerCase().indexOf("sunny")>=0){%>
+              <%if(weatherData.real_time_info.is_day == 1){%>
+                <div class="background sunny">
+                  <div class="sun"></div>
+                </div>
+                <%}else{%>
+                  <div class="background clear-night">
+                    <div class="moon"></div>
+                  <div id="stars1"></div>         
+                  <div id="stars2"></div>         
+                  <div id="stars3"></div>  
+                  </div>
+                  <%}%>
+      %}else if(weatherData.real_time_info.condition.toLowerCase().indexOf("snow")>=0){%>
+        <%if(weatherData.real_time_info.condition.toLowerCase().indexOf("thunder")>=0){%>
+          <div class="background snow lightning">
+            <div id="snowball1"></div>         
+            <div id="snowball2"></div>         
+            <div id="snowball3"></div>   
+            </div>
+            <%}else{%>
+              <div class="background snow">
+                <div id="snowball1"></div>         
+            <div id="snowball2"></div>         
+            <div id="snowball3"></div>   
+              </div>
+              <%}%>
+      <%}else{%>
+        <div class="background">
+        </div>
+        <%}%>
+        <%}else{%>
+          <div class="background">
+          </div>
+          <%}%>
+      <div class="main-container" >
+        <div class="submain-container">
+          <div id="navbar">
+            <div id="logo"><img src="./images/logo.jpg" /></div>
+            <div id="account-settings">
+              <div id="me" class="acc-button">
+                <img src="./uploads/avatars/<%=avatar%>" />
+                <span id="city-adder"><i class="fa-solid fa-chevron-down"></i></span>
+                <div class="responsive-city-container hidden">
+                  <header>Cities</header>
+                  <div class="responsive-cities">
+                    <% allLocationData.forEach((location)=>{ %>
+                      <%if(allLocationData[0]._id==location.id){%>
+                    <div class="responsive-city city-clicked" onclick="getWeatherData('<%=location._id%>')" id="<%=location._id%>"><%}else{%>
+                      <div class="responsive-city" onclick="getWeatherData('<%=location._id%>')" id="<%=location._id%>"><%}%>
+                      <%=location.name %>                
+                    </div>
+                    <% }); %>
+                  </div>
+                  <footer><a href="/cities">Manage cities</a></footer>
+                </div>
+              </div>
+              <div id="logout" class="acc-button" onclick="logout()">Logout</div>
+            </div>
+          </div>
+          <div class="sub-container">
+            <div id="left-container" class="containers">
+              <div id="header">Cities</div>
+              <div class="city-container">
+                <div class="city-sub-container">
+                  <% allLocationData.forEach((location)=>{ %>
+                    <%if(allLocationData[0]._id==location.id){%>
+                  <div class="city city-clicked" onclick="getWeatherData('<%=location._id%>')" id="<%=location._id%>"><%}else{%>
+                    <div class="city" onclick="getWeatherData('<%=location._id%>')" id="<%=location._id%>"><%}%>
+                    <div class="city-name"><%=location.name %></div>
+                    <div class="city-weather">
+                      <div class="temp"><%=location.real_time_info.temp_c %>&#8451;</div>
+                      <div class="weather-condition"><%=location.real_time_info.condition %></div>
+                    </div>
+                  </div>
+                  <% }); %>
+                </div>
+              </div>
+              <div id="manage-cities"><a href="/cities">Manage cities</a></div>
+            </div>
+            <div id="divider"></div>
+            <div id="right-container" class="containers">
+              <% if(allLocationData.length > 0 ){%>
+              <div class="sub-left-container">
+                <div class="temp-condition-div">
+                  <% if(Object.keys(weatherData).length!==0){%>
+                  <div id="temperature"><%=weatherData.real_time_info.temp_c%>&#8451;</div>
+                  <div id="maxmin-temp"><%=weatherData.real_time_info.maxtemp_c%>&#8451;/<%=weatherData.real_time_info.mintemp_c%>&#8451;</div>
+                  <div id="weather-condition"><%=weatherData.real_time_info.condition%></div>
+                  <div id="location"><%=weatherData.name%></div>
+                  <div id="last-updated">last updated:<%=weatherData.real_time_info.last_updated%> <span id="refresh-data" onclick="refreshData('<%=weatherData._id%>')">  <i class="fa-solid fa-arrows-rotate"></i></span></div>
+                  <%}%>
+                </div>
+                <div class="time-forecast">
+                  <%if(Object.keys(weatherData).length!==0){%>
+                    <%weatherData.forecastday[0].forecasthour.forEach((hour)=>{%>
+                  <div class="forecast-mini-container">
+                    <div class="time"><%=hour.hour%></div>
+                    <div class="condition-icon"><img src="./images/<%=hour.is_day%>/<%=hour.condition_code%>.png"></div>
+                    <div class="time-temperature"><%=hour.temp_c%>&#8451;</div>
+                  </div>
+                  <%});}%> 
+                </div>
+                <div class="day-forecast">
+                  <% if(Object.keys(weatherData).length!==0){%>
+                  <%weatherData.forecastday.forEach((day)=>{%>
+                    <div class="oneday-forecast">
+                        <div class="day-date"><%=day.day%>, <%=day.date_of_month%> <%=day.month%></div>
+                        <div class="day-condition"><img src='./images/1/<%=day.condition_code%>.png'></div>
+                        <div class="day-temperature"><%=day.maxtemp_c%>&#8451;/<%=day.mintemp_c%>&#8451;</div>
+                    </div>
+                    <%});}%>
+                </div>
+              </div>
+              <div class="sub-right-container">
+                <div class="mini-container">
+                  <h3>COMFORT LEVEL</h3>
+                  <div class="humidity-container">
+                    <div class="humidity-graph">
+                      <h4>Humidity</h4>
+                      <div>
+                        <% if(Object.keys(weatherData).length!==0){%>
+                        <div id="percentage_humidity"><%=weatherData.real_time_info.humidity%>%</div><%}%>
+                        <svg class="svg1">
+                          <circle cx="80" cy="80" r="44" class="circle1" />
+                          <% if(Object.keys(weatherData).length!==0){%>
+                          <circle cx="80" cy="80" r="44" class="circle2" style="stroke-dashoffset:calc(277 - 2.23*<%=weatherData.real_time_info.humidity%>)"/><%}%>
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="humidity-info">
+                      <% if(Object.keys(weatherData).length!==0){%>
+                      <div>Feels like: <%=weatherData.real_time_info.feels_like%>&#8451;</div>
+                      <div>UV index: <%=weatherData.real_time_info.uv%></div>
+                      <%}%>
+                    </div>
+                  </div>
+                </div>
+                <div class="mini-container">
+                  <h3>WIND</h3>
+                  <div class="wind-container">
+                    <div class="windmill-container">
+                      <div class="windmill1 windmill">
+                        <svg height="156px" width="153px">
+                          <polygon points="90,60 93,60 96,150 87,150 " />
+                          <circle cx="91.5" cy="60" r="5" class="circle4" />
+                          <!-- <circle cx="91.5" cy="60" r="50" class="circle4" /> -->
+                        </svg>
+                        <div class="wind-ellipses">
+                          <span class="ellipse"></span>
+                          <span class="ellipse"></span>
+                          <span class="ellipse"></span>
+                        </div>
+                      </div>
+                      <div class="windmill2 windmill">
+                        <svg height="156px" width="153px">
+                          <polygon points="90,60 93,60 96,130 87,130 " />
+                          <circle cx="91.5" cy="60" r="5" class="circle4" />
+                          <!-- <circle cx="91.5" cy="60" r="50" class="circle4" /> -->
+                        </svg>
+                        <div class="wind-ellipses">
+                          <span class="ellipse"></span>
+                          <span class="ellipse"></span>
+                          <span class="ellipse"></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="wind-info">
+                      <% if(Object.keys(weatherData).length!==0){%>
+                      <div>Direction: <%=weatherData.real_time_info.wind_dir%></div>
+                      <div>Speed:  <%=weatherData.real_time_info.wind_kph%>km/h</div>
+                      <%}%>
+                    </div>
+                  </div>
+                </div>
+                <div class="mini-container">
+                  <h3>Sunrise and sunset</h3>
+                  <div class="sun-moon-container">
+                    <div class="svg2-container">
+                      <svg class="svg2">
+                        <ellipse cx="140" cy="80" rx="70" ry="70" />
+                        <line x1="50" y1="80" x2="230" y2="80" />
+                        <% if(Object.keys(weatherData).length!==0){%>
+                          <% if(weatherData.real_time_info.is_day == 1){ %>
+                          <div class="stick1 stick full-opacity" style="transform:rotate(<%=180/weatherData.real_time_info.time_between * weatherData.real_time_info.time_from_sunrise%>deg)">
+                            <div class="sun-container">
+                              <span id="little-sun"></span>
+                            </div>
+                          </div>
+                          <div class="stick2 stick half-opacity" style="transform:rotate(180deg)">
+                            <div class="moon-container">
+                              <span id="little-moon"></span>
+                            </div>
+                          </div>
+                          <%}else{%>
+                            <div class="stick1 stick half-opacity" style="transform:rotate(180deg)">
+                              <div class="sun-container">
+                                <span id="little-sun"></span>
+                              </div>
+                            </div>
+                            <div class="stick2 stick  full-opacity" style="transform:rotate(<%=180 + 180/weatherData.real_time_info.time_between * weatherData.real_time_info.time_from_sunset%>deg)">
+                              <div class="moon-container">
+                                <span id="little-moon"></span>
+                              </div>
+                            </div>
+                            <%}%>
+                          <%}%>
+                      </svg>
+                      <% if(Object.keys(weatherData).length!==0){%>
+                      <div class="sunRiseSet-time"><span><%=weatherData.real_time_info.sunrise%></span> <span><%=weatherData.real_time_info.sunset%></span></div><%}%>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <%}else{%>
+                <div class="no-background">
+                  Add City
+                </div>
+                <%}%>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      const tempConditionDiv = document.querySelector(".temp-condition-div");
+      const timeForecast = document.querySelector(".time-forecast");
+      const dayForecast = document.querySelector(".day-forecast");
+      const percentage_humidity = document.querySelector("#percentage_humidity");
+      const humidityInfo = document.querySelector(".humidity-info");
+      const circle2 = document.querySelector(".circle2");
+      const stick1 = document.querySelector(".stick1");
+      const stick2 = document.querySelector(".stick2");
+      const windInfo = document.querySelector(".wind-info");
+      const refreshButton = document.querySelector("#refresh-data");
+      const sunRiseSetTime = document.querySelector(".sunRiseSet-time");
+      const backgroundDiv = document.querySelector(".background");
+
+      const cityAdder = document.getElementById("city-adder");
+
+
+
+      const logoutToast = Toastify({
+        text:"You are being logged out...",
+        duration:2000
+      });
+      const refreshToast = Toastify({
+        text:"Refreshed successfully",
+        duration:1000
+      });
+      const refreshFailureToast = Toastify({
+        text:"Refresh failure!",
+        duration:1000
+      });
+
+      function logout(){
+        fetch("/index/logout", {
+          method:"DELETE"
+        });
+        logoutToast.showToast();
+        setTimeout(()=>{
+          window.location.replace("/");
+        }, 1000)
+      }
+
+      async function getWeatherData(locationId){
+       
+        
+
+        if(document.querySelector(".city-clicked")){
+          document.querySelector(".city-clicked").classList.remove("city-clicked");
+        }
+        const cityContainer = document.getElementById(`${locationId}`);
+        cityContainer.classList.add("city-clicked");
+        const cityWeatherDiv = cityContainer.querySelector(".city-weather");
+
+         let response = await fetch(`/index/weather/${locationId}`);
+         let result = await response.json();
+
+         if(cityWeatherDiv){
+           cityWeatherDiv.innerHTML = `<div class="temp">${result.data.real_time_info.temp_c}&#8451;</div>
+                        <div class="weather-condition">${result.data.real_time_info.condition}</div>`;
+         }
+
+
+         circle2.style.strokeDashoffset = 277-result.data.real_time_info.humidity*2.23;
+
+         getBackground(result.data);
+
+        if(result.data.real_time_info.is_day == 1){
+          stick2.classList.add("half-opacity");
+          stick1.classList.remove("half-opacity");
+          stick1.classList.add("full-opacity");
+          stick1.style.transform = `rotate(${180/result.data.real_time_info.time_between * result.data.real_time_info.time_from_sunrise}deg)`;
+          stick2.style.transform = `rotate(${180}deg)`;
+
+        }else{
+          stick1.classList.add("half-opacity");
+          stick2.classList.remove("half-opacity");
+          stick2.classList.add("full-opacity");
+          stick2.style.transform = `rotate(${180 + 180/result.data.real_time_info.time_between * result.data.real_time_info.time_from_sunset}deg)`;
+          stick1.style.transform = `rotate(${180}deg)`;
+        }         
+         tempConditionDiv.innerHTML = `<div id="temperature">${result.data.real_time_info.temp_c}&#8451;</div>
+                  <div id="maxmin-temp">${result.data.real_time_info.maxtemp_c}&#8451;/${result.data.real_time_info.mintemp_c}&#8451;</div>
+                  <div id="weather-condition">${result.data.real_time_info.condition}</div>
+                  <div id="location">${result.data.name}</div>
+                  <div id="last-updated">last updated:${result.data.real_time_info.last_updated} <span id="refresh-data" onclick="refreshData('${result.data._id}')">  <i class="fa-solid fa-arrows-rotate"></i></span></div>`;
+        
+        timeForecast.innerHTML = "";
+        result.data.forecastday[0].forecasthour.forEach((hour)=>{
+          timeForecast.innerHTML += `<div class="forecast-mini-container">
+                    <div class="time">${hour.hour}</div>
+                    <div class="condition-icon"><img src="./images/${hour.is_day}/${hour.condition_code}.png"></div>
+                    <div class="time-temperature">${hour.temp_c}&#8451;</div>
+                  </div>`;
+        });
+        dayForecast.innerHTML = "";
+        result.data.forecastday.forEach((day)=>{
+          dayForecast.innerHTML += `<div class="oneday-forecast">
+                        <div class="day-date">${day.day}, ${day.date_of_month} ${day.month}</div>
+                        <div class="day-condition"><img src='./images/1/${day.condition_code}.png'></div>
+                        <div class="day-temperature">${day.maxtemp_c}&#8451;/${day.mintemp_c}&#8451;</div>
+                    </div>`;
+        });
+        percentage_humidity.innerText = `${result.data.real_time_info.humidity}%`;
+        humidityInfo.innerHTML = `<div>Feels like: ${result.data.real_time_info.feels_like}&#8451;</div>
+                      <div>UV index: ${result.data.real_time_info.uv}</div>`;
+        windInfo.innerHTML = `<div>Direction: ${result.data.real_time_info.wind_dir}</div>
+                      <div>Speed:  ${result.data.real_time_info.wind_kph}km/h</div>`;
+        sunRiseSetTime.innerHTML = `<span>${result.data.real_time_info.sunrise}</span> <span>${result.data.real_time_info.sunset}</span>`;
+      };
+
+      async function refreshData(locationId){
+        const cityTemp = document.getElementById(`${locationId}`).querySelector(".temp");
+        const cityCondition = document.getElementById(`${locationId}`).querySelector(".weather-condition");
+        const refreshButton = document.querySelector("#refresh-data");
+        refreshButton.classList.add("rotate");
+        try{
+          let response = await fetch(`/index/refresh/${locationId}`);
+          let result = await response.json();
+          if(!result.errors){
+            setTimeout(()=>{
+              refreshToast.showToast();
+              circle2.style.strokeDashoffset = 277-result.data.real_time_info.humidity*2.23;
+
+              getBackground(result.data);
+
+              if(result.data.real_time_info.is_day == 1){
+                  stick2.classList.add("half-opacity");
+                  stick1.classList.remove("half-opacity");
+                  stick1.classList.add("full-opacity");
+                  stick1.style.transform = `rotate(${180/result.data.real_time_info.time_between * result.data.real_time_info.time_from_sunrise}deg)`;
+                  stick2.style.transform = `rotate(${180}deg)`;
+
+              }else{
+                  stick1.classList.add("half-opacity");
+                  stick2.classList.remove("half-opacity");
+                  stick2.classList.add("full-opacity");
+                  stick2.style.transform = `rotate(${180 + 180/result.data.real_time_info.time_between * result.data.real_time_info.time_from_sunset}deg)`;
+                  stick1.style.transform = `rotate(${180}deg)`;
+              } 
+
+              cityTemp.innerHTML = `${result.data.real_time_info.temp_c}&#8451;`;
+              cityCondition.innerText = result.data.real_time_info.condition;
+              tempConditionDiv.innerHTML = `<div id="temperature">${result.data.real_time_info.temp_c}&#8451;</div>
+                  <div id="maxmin-temp">${result.data.real_time_info.maxtemp_c}&#8451;/${result.data.real_time_info.mintemp_c}&#8451;</div>
+                  <div id="weather-condition">${result.data.real_time_info.condition}</div>
+                  <div id="location">${result.data.name}</div>
+                  <div id="last-updated">last updated:${result.data.real_time_info.last_updated} <span id="refresh-data" onclick="refreshData('${result.data._id}')">  <i class="fa-solid fa-arrows-rotate"></i></span></div>`;
+        
+              timeForecast.innerHTML = "";
+              result.data.forecastday[0].forecasthour.forEach((hour)=>{
+          timeForecast.innerHTML += `<div class="forecast-mini-container">
+                    <div class="time">${hour.hour}</div>
+                    <div class="condition-icon"><img src="./images/${hour.is_day}/${hour.condition_code}.png"></div>
+                    <div class="time-temperature">${hour.temp_c}&#8451;</div>
+                  </div>`;
+        });
+        dayForecast.innerHTML = "";
+              result.data.forecastday.forEach((day)=>{
+          dayForecast.innerHTML += `<div class="oneday-forecast">
+                        <div class="day-date">${day.day}, ${day.date_of_month} ${day.month}</div>
+                        <div class="day-condition"><img src='./images/1/${day.condition_code}.png'></div>
+                        <div class="day-temperature">${day.maxtemp_c}&#8451;/${day.mintemp_c}&#8451;</div>
+                    </div>`;
+        });
+              percentage_humidity.innerText = `${result.data.real_time_info.humidity}%`;
+              humidityInfo.innerHTML = `<div>Feels like: ${result.data.real_time_info.feels_like}&#8451;</div>
+                      <div>UV index: ${result.data.real_time_info.uv}</div>`;
+              windInfo.innerHTML = `<div>Direction: ${result.data.real_time_info.wind_dir}</div>
+                      <div>Speed:  ${result.data.real_time_info.wind_kph}km/h</div>`;
+              sunRiseSetTime.innerHTML = `<span>${result.data.real_time_info.sunrise}</span> <span>${result.data.real_time_info.sunset}</span>`;
+            }, 3000);
+          }else{
+            throw "Error";
+          }
+        }catch(err){
+          refreshButton.classList.remove("rotate");
+          refreshFailureToast.showToast();
+        }
+      }
+      
+
+      function getBackground(weatherData){
+        
+      if(weatherData.real_time_info.condition.toLowerCase().indexOf("rain")>=0){
+        if(weatherData.real_time_info.condition.indexOf("thunder")>=0){
+          backgroundDiv.className ="background rain lightning";
+          backgroundDiv.innerHTML = "";
+        }else{
+          backgroundDiv.className = "background rain";
+          backgroundDiv.innerHTML = "";
+          
+
+          }
+      }else if(weatherData.real_time_info.condition.toLowerCase().indexOf("cloudy")>=0){
+          if(weatherData.real_time_info.is_day == 1){
+            backgroundDiv.className = "background cloudy";
+          backgroundDiv.innerHTML = `<div class="clouds-div">
+                <div class="cloud cloud-1" style="--i:1"><img src="./images/cloud1.png"></div>
+                <div class="cloud cloud-2" style="--i:2"><img src="./images/cloud3.png"></div>
+            </div>
+            <div class="clouds-div">
+                <div class="cloud cloud-3" style="--i:3"><img src="./images/cloud2.png"></div>
+                <div class="cloud cloud-4" style="--i:4"><img src="./images/cloud3.png"></div>
+            </div>         
+            <div class="clouds-div">
+                <div class="cloud cloud-5" style="--i:5"><img src="./images/cloud1.png"></div>
+                <div class="cloud cloud-6" style="--i:6"><img src="./images/cloud2.png"></div>
+            </div>         
+            <div class="clouds-div">
+                <div class="cloud cloud-5" style="--i:5"><img src="./images/cloud3.png"></div>
+                <div class="cloud cloud-6" style="--i:6"><img src="./images/cloud1.png"></div>
+            </div> `;
+          }else{
+            backgroundDiv.className = "background cloudy clear-night";
+          backgroundDiv.innerHTML = `<div class="clouds-div">
+                <div class="cloud cloud-1" style="--i:1"><img src="./images/cloud1.png"></div>
+                <div class="cloud cloud-2" style="--i:2"><img src="./images/cloud3.png"></div>
+            </div>
+            <div class="clouds-div">
+                <div class="cloud cloud-3" style="--i:3"><img src="./images/cloud2.png"></div>
+                <div class="cloud cloud-4" style="--i:4"><img src="./images/cloud3.png"></div>
+            </div>         
+            <div class="clouds-div">
+                <div class="cloud cloud-5" style="--i:5"><img src="./images/cloud1.png"></div>
+                <div class="cloud cloud-6" style="--i:6"><img src="./images/cloud2.png"></div>
+            </div>         
+            <div class="clouds-div">
+                <div class="cloud cloud-5" style="--i:5"><img src="./images/cloud3.png"></div>
+                <div class="cloud cloud-6" style="--i:6"><img src="./images/cloud1.png"></div>
+            </div> 
+              <div class="moon"></div>
+              <div id="stars1"></div>         
+              <div id="stars2"></div>         
+              <div id="stars3"></div>` ; 
+              
+            }
+            }else if(weatherData.real_time_info.condition.toLowerCase().indexOf("sunny")>=0){
+              if(weatherData.real_time_info.is_day == 1){
+                backgroundDiv.className = "background sunny";
+                backgroundDiv.innerHTML = `<div class="sun"></div>`;
+                }else{
+                  backgroundDiv.className = "background clear-night";
+                  backgroundDiv.innerHTML = `<div class="background clear-night">
+                    <div class="moon"></div>
+                    <div id="stars1"></div>         
+                    <div id="stars2"></div>         
+                    <div id="stars3"></div>  
+                  </div>`;          
+                }
+              }else if(weatherData.real_time_info.condition.toLowerCase().indexOf("clear")>=0){
+                backgroundDiv.className = "background clear-night";
+                  backgroundDiv.innerHTML = `<div class="background clear-night">
+                    <div class="moon"></div>
+                    <div id="stars1"></div>         
+                    <div id="stars2"></div>         
+                    <div id="stars3"></div>  
+                  </div>`; 
+              }else if(weatherData.real_time_info.condition.toLowerCase().indexOf("snow")>=0){
+                   if(weatherData.real_time_info.condition.toLowerCase().indexOf("thunder")>=0){
+                    backgroundDiv.className = "background snow lightning";
+                    backgroundDiv.innerHTML = `<div id="snowball1"></div>         
+                                                <div id="snowball2"></div>         
+                                                <div id="snowball3"></div> `;
+                    }else{
+                      backgroundDiv.className = "background snow";
+                      backgroundDiv.innerHTML = `<div id="snowball1"></div>         
+                                                <div id="snowball2"></div>         
+                                                <div id="snowball3"></div> `;
+                    }
+              }else{
+                backgroundDiv.className = "background";
+                backgroundDiv.innerHTML = "";
+              }
+              const rain_container = document.querySelector("div.rain");
+              console.log(rain_container);
+              if (rain_container) {
+                    const dropNum = 800;
+                    createRain(dropNum, rain_container);
+              }
+         }
+
+
+      cityAdder.onclick = function(){
+        console.log("hello");
+        const responsiveCityContainer = document.querySelector(".responsive-city-container");
+        const responsiveCities = document.querySelector(".responsive-cities");
+        if(responsiveCityContainer.classList.contains("visible")){
+          responsiveCityContainer.classList.add("hidden");
+          responsiveCityContainer.classList.remove("visible");
+          responsiveCityContainer.style.opacity = 0;
+          responsiveCities.innerHTML = "";
+        }else if(responsiveCityContainer.classList.contains("hidden")){
+          responsiveCityContainer.classList.add("visible");
+          responsiveCityContainer.classList.remove("hidden");
+          responsiveCities.innerHTML = `<% allLocationData.forEach((location)=>{ %>
+                      <%if(allLocationData[0]._id==location.id){%>
+                    <div class="responsive-city city-clicked" onclick="getWeatherData('<%=location._id%>')" id="<%=location._id%>"><%}else{%>
+                      <div class="responsive-city" onclick="getWeatherData('<%=location._id%>')" id="<%=location._id%>"><%}%>
+                      <%=location.name %>                
+                    </div>
+                    <% }); %>`;
+          responsiveCityContainer.style.opacity = 1;
+        }
+
+      }
+    </script>
+  </body>
+</htm

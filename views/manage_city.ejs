@@ -1,0 +1,158 @@
+<%-include('./partials/header.ejs')%>
+<body>
+    <main id="container">
+      <div class="background"></div>
+      <div class="main-container">
+        <div class="manage-city-container">
+          <header>
+            <a href="/index">Back</a>
+            <h3>Manage Cities</h3>
+          </header>
+          <div class="cities">
+            <% allLocationData.forEach((location)=>{ %>
+            <div class="city-mini-container">
+              <div class="city-title"><%=location.name %></div>
+              <div class="condition-icon"><img src="./images/<%=location.real_time_info.is_day%>/<%=location.real_time_info.condition_code%>.png" ></div>
+              <div class="temp-value"><%=location.real_time_info.temp_c %><sup>o</sup></div>
+              <div class="deleteIcon" onclick="deleteContainer('<%=location._id%>')"><img src="./images/trash.png"></div>
+            </div>
+            <% }); %>
+          </div>
+          <footer>
+            <h3 title="Add city" id="add-button"><i class="fa-solid fa-circle-plus"></i></h3>
+          </footer>
+        </div>
+        <div class="search-city-modal hide">
+          <header>
+            <h4>Search city</h4>
+          </header>
+          <form id="search-city">
+            <input type="text" placeholder="City name">
+            <input type="submit" value="Search">
+          </form>
+          <div id="cross-button">
+            <i class="fa-solid fa-xmark"></i>
+          </div>
+          <div id="searched-name" class="hide">
+              <!-- <div class="searched-city-name">Sylhet</div>
+              <div class="searched-city-name">Rajshahi</div>
+              <div class="searched-city-name">Fenchuganj</div> -->
+          </div>
+        </div>
+      </div>
+
+    </main>
+    <script>
+      const searchModal = document.querySelector(".search-city-modal");
+      const crossButton = document.getElementById("cross-button");
+      const addButton = document.getElementById("add-button");
+      const searchPopup = document.getElementById("searched-name");
+      const searchInput = document.querySelector("input[type='text']");
+      const searchCityForm = document.getElementById("search-city");
+      let searchedCityName;
+      let myTimeout ;
+
+      const notFoundToast = Toastify({
+        text:"Must provide a valid place name",
+        duration:2000
+      });
+      const addedToast = Toastify({
+        text:"Added successfully",
+        duration:1000
+      });
+      const deletedToast = Toastify({
+        text:"Deleted successfully",
+        duration:1000
+      });
+      const failureToast = Toastify({
+        text:"Failure",
+        duration:1000
+      });
+
+      crossButton.onclick = function(){
+        searchModal.classList.add("hide");
+        searchModal.classList.remove("show");
+      }
+      addButton.onclick = function(){
+        searchModal.classList.add("show");
+        searchModal.classList.remove("hide");
+      }
+      searchInput.onkeydown = function(){
+        clearTimeout(myTimeout);
+        searchPopup.classList.add("hide");
+        searchPopup.classList.remove("show");
+      }
+      searchInput.onkeyup = function(){
+        clearTimeout(myTimeout);
+
+        myTimeout = setTimeout(searchCity, 2000);
+      }
+      
+
+      async function searchCity(){
+        searchPopup.innerHTML = "";
+        let response = await fetch(`/cities/search/${searchInput.value}`);
+        let result = await response.json();
+        if(!result.errors){
+          result = result.result;
+          console.log(result);
+          for(let i=0; i<result.length; i++){
+            let cityNameDiv = document.createElement("div");
+            cityNameDiv.classList.add("searched-city-name");
+            cityNameDiv.innerText = result[i].name;
+            searchPopup.append(cityNameDiv);
+          }
+          searchPopup.classList.add("show");
+          searchPopup.classList.remove("hide");
+          searchedCityName = document.querySelectorAll(".searched-city-name");
+          searchedCityName.forEach((element)=>{
+            element.onclick = function(){
+              searchInput.value = element.innerText;
+              searchPopup.classList.add("hide");
+              searchPopup.classList.remove("show");
+            }
+          });
+        } 
+        else{
+          notFoundToast.showToast();
+        }
+      }
+      // searchCity();
+      
+      searchCityForm.onsubmit = async function(event){
+        event.preventDefault();
+        let response = await fetch(`/cities/addPlace/${searchInput.value}`);
+        let result = await response.json();
+
+        if(!result.errors){
+          addedToast.showToast();
+          setTimeout(()=>{
+            location.reload();
+          },1000);
+        }else{
+          let toast = Toastify({
+            text:result.errors.common.msg,
+            duration:1000
+          });
+          toast.showToast();
+        }
+      }
+
+      async function deleteContainer(locationId){
+        let response = await fetch(`/cities/deletePlace/${locationId}`,{
+          method:"DELETE"
+        });
+        let result = await response.json();
+
+        if(!result.errors){
+          deletedToast.showToast();
+          setTimeout(()=>{
+            location.reload();
+          },1000);
+        }else{
+          failureToast.showToast();
+        }
+      }
+    </script>
+  </body>
+</html>

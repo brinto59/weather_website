@@ -16,7 +16,10 @@
                 <p class="error password-error"></p>
                 <input type="password" placeholder="Re-enter the password" name="rePassword">
                 <p class="error rePassword-error"></p>
-                <input type="file" name="avatar" placeholder="Upload your avatar">
+                <div>
+                  <input type="file" name="avatar" onchange="fileUploaded()" id="fileUploader">
+                  <label for="fileUploader">Upload your avatar</label>
+                </div>
                 <p class="error avatar-error"></p>
 
                 <p class="error common-error"></p>
@@ -33,13 +36,23 @@
     <script>
       const form = document.getElementById("signup-form");
       const submitter = document.querySelector("input[type=submit]");
-      console.log(form);
-      console.log("hello");
 
       const successToast = Toastify({
         text:"You signed up successfully",
         duration:1000
       });
+
+      function fileUploaded(){
+        const fileUploader = document.querySelector("#fileUploader");
+        const label = document.querySelector("#fileUploader~label");
+        
+        if(fileUploader.value==""){
+          label.innerHTML = "Upload your avatar";
+        }else{
+          let fileName = fileUploader.value.split("\\");
+          label.innerHTML = `${fileName[fileName.length - 1]}`;
+        }
+      }
 
       form.onsubmit = async function(event){
         event.preventDefault();
@@ -64,7 +77,6 @@
         const result = await response.json();
 
         if(result.errors){
-          // console.log(result.errors);
           Object.keys(result.errors).forEach((fieldname)=>{
             form[fieldname].classList.add('input-error');
             document.querySelector(`.${fieldname}-error`).style.display="block";
@@ -72,7 +84,6 @@
           })
         }else{
           successToast.showToast();
-          console.log("success");
           setTimeout(()=>{
             window.location.href = "/";
           }, 1000);

@@ -12,9 +12,15 @@
                 <p class="error name-error"></p>
                 <input type="text" placeholder="Enter your Email" name="email">
                 <p class="error email-error"></p>
-                <input type="password" placeholder="Enter password" name="password">
+                <div>
+                  <input type="password" id="password-input1" placeholder="Enter password" name="password">
+                  <div class="eye" id="eye1"><i class="fa-solid fa-eye-slash"></i></div>
+                </div>
                 <p class="error password-error"></p>
-                <input type="password" placeholder="Re-enter the password" name="rePassword">
+                <div>
+                  <input type="password" id="password-input2" placeholder="Re-enter the password" name="rePassword">
+                  <div class="eye" id="eye2"><i class="fa-solid fa-eye-slash"></i></div>
+                </div>
                 <p class="error rePassword-error"></p>
                 <div>
                   <input type="file" name="avatar" onchange="fileUploaded()" id="fileUploader">
@@ -36,6 +42,30 @@
     <script>
       const form = document.getElementById("signup-form");
       const submitter = document.querySelector("input[type=submit]");
+
+      const eye1 = document.getElementById("eye1");
+      const eye2 = document.getElementById("eye2");
+      const passwordInput1 = document.getElementById("password-input1");
+      const passwordInput2 = document.getElementById("password-input2");
+      
+      eye1.onclick = function(){
+        if(passwordInput1.type == "text"){
+          eye1.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+          passwordInput1.type = "password";
+        }else if(passwordInput1.type == "password"){
+          eye1.innerHTML = '<i class="fa-solid fa-eye"></i>';
+          passwordInput1.type = "text";
+        }
+      }
+      eye2.onclick = function(){
+        if(passwordInput2.type == "text"){
+          eye2.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+          passwordInput2.type = "password";
+        }else if(passwordInput2.type == "password"){
+          eye2.innerHTML = '<i class="fa-solid fa-eye"></i>';
+          passwordInput2.type = "text";
+        }
+      }
 
       const successToast = Toastify({
         text:"You signed up successfully",

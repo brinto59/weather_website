@@ -16,12 +16,15 @@
                   <%}else{%>
                     <input type="text" placeholder="Enter your email" name="email">
                     <%}%>
-                <% if(errors.password){%>
-                <input type="password" placeholder="Enter password" name="password" class="input-error">
-                <p class="error password-error show"><%=errors.password.msg%></p>
-                <%}else{%>
-                  <input type="password" placeholder="Enter password" name="password">
-                <%}%>
+                    <div>
+                      <% if(errors.password){%>
+                      <input type="password" id="password-input" placeholder="Enter password" name="password" class="input-error">
+                      <p class="error password-error show"><%=errors.password.msg%></p>
+                      <%}else{%>
+                        <input type="password" id="password-input" placeholder="Enter password" name="password">
+                      <%}%>
+                      <div id="eye"><i class="fa-solid fa-eye-slash"></i></div>
+                    </div>
                 <% if(errors.common){%>
                 <p class="error common-error show"><%=errors.common.msg%></p>
                 <%}%>
@@ -34,5 +37,19 @@
         </div>
       </div>
     </main>
+    <script>
+      const eye = document.getElementById("eye");
+      const passwordInput = document.getElementById("password-input");
+      
+      eye.onclick = function(){
+        if(passwordInput.type == "text"){
+          eye.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+          passwordInput.type = "password";
+        }else if(passwordInput.type == "password"){
+          eye.innerHTML = '<i class="fa-solid fa-eye"></i>';
+          passwordInput.type = "text";
+        }
+      }
+    </script>
   </body>
 </html>
